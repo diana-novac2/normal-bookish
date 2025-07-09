@@ -6,9 +6,9 @@ const config: { [key: string]: Knex.Config } = {
         connection: {
             host: 'localhost',
             // TODO: Use your user & password from Microsoft SQL Server
-            user: 'bookish_database_user',
-            password: 'bookish_database_user',
-            database: 'bookish',
+            user: 'DiaNov',
+            password: 'paroladbbookish123!',
+            database: 'Bookish',
         },
     },
 };

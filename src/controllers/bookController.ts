@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { listBooks } from '../services/booksService';
+import { createBook, getBook, listBooks } from '../services/booksService';
 
 class BookController {
     router: Router;
@@ -20,18 +20,15 @@ class BookController {
     }
 
     async getBook(req: Request, res: Response) {
-        return res.status(500).json({
-            error: 'server_error',
-            error_description: 'Endpoint not implemented yet.',
-        });
+        const bookID = parseInt(req.params.id);
+        const book = await getBook(bookID);
+        return res.status(200).json(book);
     }
 
-    createBook(req: Request, res: Response) {
-        // TODO: implement functionality
-        return res.status(500).json({
-            error: 'server_error',
-            error_description: 'Endpoint not implemented yet.',
-        });
+    async createBook(req: Request, res: Response) {
+        console.log(req.body);
+        const created = await createBook(req.body);
+        return res.status(201).json(created);
     }
 }
 
