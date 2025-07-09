@@ -1,5 +1,10 @@
 import { Router, Request, Response } from 'express';
-import { createBook, getBook, listBooks } from '../services/booksService';
+import {
+    createBook,
+    getBook,
+    listBooks,
+    validateCreateBookRequest,
+} from '../services/booksService';
 
 class BookController {
     router: Router;
@@ -15,20 +20,40 @@ class BookController {
     }
 
     async getBooks(_req: Request, res: Response) {
-        const books = await listBooks();
-        return res.status(200).json(books);
+        try {
+            const books = await listBooks();
+            return res.status(200).json(books);
+        } catch (error) {
+            return res
+                .status(500)
+                .json({ 'Internal Server Error': error.message });
+        }
     }
 
     async getBook(req: Request, res: Response) {
-        const bookID = parseInt(req.params.id);
-        const book = await getBook(bookID);
-        return res.status(200).json(book);
+        try {
+            const bookID = parseInt(req.params.id);
+            const book = await getBook(bookID);
+            return res.status(200).json(book);
+        } catch (error) {
+            return res.status(404).json({ Error: 'Book not found' });
+        }
     }
 
     async createBook(req: Request, res: Response) {
-        console.log(req.body);
-        const created = await createBook(req.body);
-        return res.status(201).json(created);
+        if (!validateCreateBookRequest(req.body)) {
+            return res.status(400).json({
+                error: 'Invalid book parameters',
+            });
+        }
+        try {
+            const created = await createBook(req.body);
+            return res.status(201).json(created);
+        } catch (error) {
+            return res
+                .status(500)
+                .json({ 'Internal Sever Error': error.message });
+        }
     }
 }
 

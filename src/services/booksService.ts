@@ -11,5 +11,19 @@ export const getBook = async (id: number) => {
 };
 
 export const createBook = async (bookBody: Book) => {
-    return db<Book>('Books').insert(bookBody).returning('*');
+    return db<Book>('Books')
+        .insert({
+            AuthorID: bookBody.AuthorID,
+            Title: bookBody.Title,
+            ISBN: bookBody.ISBN,
+        })
+        .returning('*');
+};
+
+export const validateCreateBookRequest = (bookBody: Book) => {
+    return (
+        typeof bookBody.Title === 'string' &&
+        typeof bookBody.AuthorID === 'number' &&
+        typeof bookBody.ISBN === 'number'
+    );
 };
