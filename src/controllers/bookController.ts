@@ -32,11 +32,19 @@ class BookController {
 
     async getBook(req: Request, res: Response) {
         try {
-            const bookID = parseInt(req.params.id);
+            const bookID = Number(req.params.id);
+            if (isNaN(bookID)) {
+                return res.status(400).json('Book ID must be a valid number');
+            }
             const book = await getBook(bookID);
+            if (book.length === 0) {
+                return res.status(404).json('Book not found');
+            }
             return res.status(200).json(book);
         } catch (error) {
-            return res.status(404).json({ Error: 'Book not found' });
+            return res
+                .status(500)
+                .json({ 'Internal Server Error': error.message });
         }
     }
 
@@ -47,8 +55,8 @@ class BookController {
             });
         }
         try {
-            const created = await createBook(req.body);
-            return res.status(201).json(created);
+            const createdBook = await createBook(req.body);
+            return res.status(201).json(createdBook);
         } catch (error) {
             return res
                 .status(500)
