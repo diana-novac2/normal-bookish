@@ -3,8 +3,8 @@
 interface Book {
     BookID: number;
     Title: string;
-    Author: string;
-    ISBN: string;
+    AuthorID: number;
+    ISBN: number;
 }
 
 export default Book;

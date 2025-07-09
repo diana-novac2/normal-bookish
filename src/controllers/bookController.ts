@@ -1,5 +1,10 @@
 import { Router, Request, Response } from 'express';
-import { listBooks } from '../services/booksService';
+import {
+    createBook,
+    getBook,
+    listBooks,
+    validateCreateBookRequest,
+} from '../services/booksService';
 
 class BookController {
     router: Router;
@@ -15,23 +20,48 @@ class BookController {
     }
 
     async getBooks(_req: Request, res: Response) {
-        const books = await listBooks();
-        return res.status(200).json(books);
+        try {
+            const books = await listBooks();
+            return res.status(200).json(books);
+        } catch (error) {
+            return res
+                .status(500)
+                .json({ 'Internal Server Error': error.message });
+        }
     }
 
     async getBook(req: Request, res: Response) {
-        return res.status(500).json({
-            error: 'server_error',
-            error_description: 'Endpoint not implemented yet.',
-        });
+        try {
+            const bookID = Number(req.params.id);
+            if (isNaN(bookID)) {
+                return res.status(400).json('Book ID must be a valid number');
+            }
+            const book = await getBook(bookID);
+            if (book.length === 0) {
+                return res.status(404).json('Book not found');
+            }
+            return res.status(200).json(book);
+        } catch (error) {
+            return res
+                .status(500)
+                .json({ 'Internal Server Error': error.message });
+        }
     }
 
-    createBook(req: Request, res: Response) {
-        // TODO: implement functionality
-        return res.status(500).json({
-            error: 'server_error',
-            error_description: 'Endpoint not implemented yet.',
-        });
+    async createBook(req: Request, res: Response) {
+        if (!validateCreateBookRequest(req.body)) {
+            return res.status(400).json({
+                error: 'Invalid book parameters',
+            });
+        }
+        try {
+            const createdBook = await createBook(req.body);
+            return res.status(201).json(createdBook);
+        } catch (error) {
+            return res
+                .status(500)
+                .json({ 'Internal Sever Error': error.message });
+        }
     }
 }
 
